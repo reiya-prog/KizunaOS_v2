@@ -11,19 +11,17 @@ sudo apt install clang -y
 ```
 - Mac OS
 おそらくデフォルトで入っています
-#### OVMF
+#### lld
 - Ubuntu
 ```
-sudo apt install ovmf
-```
-#### g++
-クロスコンパイル用。C++のためg++を使用、Cならgcc。
-```
-sudo apt install g++-mingw-w64-x86-64
-```
-#### lld
-```
 sudo apt install lld-6.0
+```
+- Mac OS
+```
+brew install llvm
+# 必要に応じてPATHを通す
+LLVM_PREFIX=`brew --prefix llvm`
+export PATH=$PATH:$LLVM_PREFIX/bin
 ```
 ### standard library
 #### newlib
@@ -37,6 +35,7 @@ cd $HOME/work
 mkdir -p build_newlib
 cd build_newlib
 ../newlib-cygwin/newlib/configure CC=clang CFLAGS="-nostdlibinc -O2" --target=x86_64-elf --prefix=$HOME/x86_64-elf --disable-multilib
+
 make -j 4
 make install
 ```
