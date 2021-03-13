@@ -1,14 +1,18 @@
 # Kizuna OS
 ぼちぼちがんばりたい
 ## Requirements
-Windows wsl2 Ubuntu 20.04.1 LTSを使用しています。
-でもwsl2のQEMUはCUI実行のみなので実行はWindows上でやっていたりしてます。
+Windows wsl2(Ubuntu 20.04.1 LTS)もしくはMac OSを想定しています。<br>
+wsl2のQEMUはCUI実行のみなので実行自体はWindows上でやっていたりしてます。
 ### common
 #### clang++
+- Ubuntu
 ```
 sudo apt install clang -y
 ```
+- Mac OS
+おそらくデフォルトで入っています
 #### OVMF
+- Ubuntu
 ```
 sudo apt install ovmf
 ```
@@ -29,8 +33,6 @@ cd $HOME/work
 git clone git://sourceware.org/git/newlib-cygwin.git
 cd newlib-cygwin
 git checkout newlib-2_5_0
-```
-```
 cd $HOME/work
 mkdir -p build_newlib
 cd build_newlib
@@ -40,6 +42,7 @@ make install
 ```
 #### libc++abi
 ```
+cd $HOME/work
 git clone --depth 1 --branch release/10.x https://github.com/llvm/llvm-project.git
 mkdir build_libcxxabi
 cd build_libcxxabi
@@ -58,9 +61,13 @@ cmake -G "Unix Makefiles" \
   -DLIBCXXABI_ENABLE_SHARED=False \
   -DLIBCXXABI_ENABLE_STATIC=True \
   $HOME/work/llvm-project/libcxxabi
+
+make -j4
+make install
 ```
 #### libc++
 ```
+cd $HOME/work
 git clone --depth 1 --branch release/10.x https://github.com/llvm/llvm-project.git
 mkdir build_libcxx
 cd build_libcxx
@@ -85,4 +92,7 @@ cmake -G "Unix Makefiles" \
   -DLIBCXX_ENABLE_SHARED=False \
   -DLIBCXX_ENABLE_STATIC=True \
   $HOME/work/llvm-project/libcxx
+
+make -j4
+make install
 ```
