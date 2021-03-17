@@ -14,8 +14,8 @@ FrameBuffer *InitFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
 
 void BootLoader(EFI::EFI_HANDLE image_handle, EFI::EFI_SYSTEM_TABLE *system_table)
 {
-    EFI efi(sysmte_table);
-    efi.InitEFI();
+    EFI efi(system_table);
+    efi.initEFI();
     FrameBuffer *fb = InitFrameBuffer(efi.getGraphicsOutputProtocol());
-    load_kernel(ImageHandle, &efi, fb);
+    load_kernel(image_handle, &efi, fb);
 }
