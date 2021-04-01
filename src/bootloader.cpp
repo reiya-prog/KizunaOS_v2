@@ -1,4 +1,5 @@
 #include "main.h"
+#include <new>
 
 FrameBuffer *InitFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
 {
@@ -14,8 +15,8 @@ FrameBuffer *InitFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
 
 void BootLoader(EFI::EFI_HANDLE image_handle, EFI::EFI_SYSTEM_TABLE *system_table)
 {
-    EFI efi(system_table);
-    efi.initEFI();
+    gEFI = new EFI(system_table);
+    gEFI.initEFI();
     FrameBuffer *fb = InitFrameBuffer(efi.getGraphicsOutputProtocol());
     load_kernel(image_handle, &efi, fb);
 }
