@@ -18,8 +18,6 @@
 // #define EFI_FILE_PROTOCOL_REVISION2 0x00020000
 // #define EFI_FILE_PROTOCOL_LATEST_REVISION EFI_FILE_PROTOCOL_REVISION2
 
-EFI gEFI = nullptr;
-
 class EFI
 {
 public:
@@ -552,3 +550,5 @@ private:
     EFI_GRAPHICS_OUTPUT_PROTOCOL *graphics_output_protocol_ = nullptr;
     EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *simple_file_system_protocol_ = nullptr;
 };
+
+EFI gEFI;

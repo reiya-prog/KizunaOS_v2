@@ -19,7 +19,7 @@ LOADER_CFAGS = \
 
 BIOS_CPPFLAGS = \
 	-MMD -MP \
-	-I $(WORKDIR)/x86_64-elf/include -I $(WORKDIR)/x86_64-elf/include/c++/v1 \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
 	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
@@ -31,7 +31,7 @@ BIOS_CPPFLAGS = \
 
 KERNEL_CPPFLAGS = \
 	-MMD -MP \
-	-I $(WORKDIR)/x86_64-elf/include -I $(WORKDIR)/x86_64-elf/include/c++/v1 \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
 	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-unknown-none-elf \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
@@ -57,9 +57,9 @@ QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -nographic
 
 BIOS_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp font.cpp graphics.cpp stdfunc.cpp elf_loader.cpp asm_loader.s
+	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s
 KERNEL_SRCS = \
-	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm_kernel.s descriptor.cpp handler.cpp keyboard.cpp pic.cpp global.cpp
+	kernel.cpp kernel_asm.s descriptor.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))

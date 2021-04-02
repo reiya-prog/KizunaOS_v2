@@ -3,7 +3,6 @@
 #include <cstdint>
 #include "elf.h"
 #include "efi.h"
-#include "graphics.h"
 
 void LoadKernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb);
 // void puts(EFI *efi, unsigned short *s);
