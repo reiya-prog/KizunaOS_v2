@@ -9,11 +9,14 @@ EFI::EFI_GUID SimpleFileSystemProtocol_GUID = {
 EFI::EFI_GUID GraphicsOutputProtocol_GUID = {
     0x9042a9de, 0x23dc, 0x4a38, {0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a}};
 
+char gEFI_buf[sizeof(EFI)];
+EFI *gEFI;
+
 void EFI::initEFI()
 {
-    SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, nullptr);
-    SystemTable->ConOut->SetMode(SystemTable->ConOut, SystemTable->ConOut->Mode->MaxMode - 1);
-    SystemTable->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->GraphicsOutputProtocol));
-    SystemTable->BootServices->LocateProtocol(&SimplePointerProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimplePointerProtocol));
-    SystemTable->BootServices->LocateProtocol(&SimpleFileSystemProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimpleFileSystemProtocol));
+    system_table_->BootServices->SetWatchdogTimer(0, 0, 0, nullptr);
+    system_table_->ConOut->SetMode(system_table_->ConOut, system_table_->ConOut->Mode->MaxMode - 1);
+    system_table_->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->graphics_output_protocol_));
+    system_table_->BootServices->LocateProtocol(&SimplePointerProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->simple_pointer_protocol_));
+    system_table_->BootServices->LocateProtocol(&SimpleFileSystemProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->simple_file_system_protocol_));
 }

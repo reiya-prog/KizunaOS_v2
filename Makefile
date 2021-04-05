@@ -54,12 +54,12 @@ KERNEL_LDFLAGS = \
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
-	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -nographic
+	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
 BIOS_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s
+	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s descriptor.cpp
+	kernel.cpp kernel_asm.s std_func.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))

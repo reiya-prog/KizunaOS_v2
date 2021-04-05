@@ -551,4 +551,5 @@ private:
     EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *simple_file_system_protocol_ = nullptr;
 };
 
-EFI gEFI;
+extern char gEFI_buf[sizeof(EFI)];
+extern EFI *gEFI;

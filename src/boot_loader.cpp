@@ -1,5 +1,13 @@
 #include "main.h"
-#include <new>
+
+void *operator new(size_t size, void *buf)
+{
+    return buf;
+}
+
+void operator delete(void *obj, void *buf) noexcept
+{
+}
 
 FrameBuffer *InitFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
 {
@@ -15,8 +23,8 @@ FrameBuffer *InitFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
 
 void BootLoader(EFI::EFI_HANDLE image_handle, EFI::EFI_SYSTEM_TABLE *system_table)
 {
-    gEFI = new EFI(system_table);
-    gEFI.initEFI();
-    FrameBuffer *fb = InitFrameBuffer(efi.getGraphicsOutputProtocol());
-    load_kernel(image_handle, &efi, fb);
+    gEFI = new(gEFI_buf) EFI(system_table);
+    gEFI->initEFI();
+    FrameBuffer *fb = InitFrameBuffer(gEFI->getGraphicsOutputProtocol());
+    LoadKernel(image_handle, fb);
 }
