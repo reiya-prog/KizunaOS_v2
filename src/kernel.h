@@ -1,15 +1,23 @@
 #pragma once
 
+#include <stdint.h>
+
+enum PixelFormat
+{
+    kPixelRGB8BitPerColor,
+    kPixelBGR8BitPerColor,
+    kPixelBitMask,
+    kPixelBitOnly,
+};
+
 typedef struct
 {
-    unsigned long long *frame_buffer_base;
-    unsigned long long frame_buffer_size;
-    unsigned int resolution_H;
-    unsigned int resolution_V;
+    uint8_t *frame_buffer_base;
+    uint32_t frame_buffer_size;
+    uint32_t pixels_per_scan_line;
+    uint32_t horizontal_resolution;
+    uint32_t vertical_resolution;
+    enum PixelFormat pixel_format;
 } FrameBuffer;
 
-typedef struct {
-    FrameBuffer frame_buffer;
-} BootStruct;
-
-extern "C" void kernel_start(BootStruct* BootStruct);
+extern "C" void kernel_start(const FrameBuffer& frame_buffer);

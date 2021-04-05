@@ -25,7 +25,7 @@ BIOS_CPPFLAGS = \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast\
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings\
+	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined\
 	-fno-builtin \
 	-std=c++17
 
@@ -37,7 +37,7 @@ KERNEL_CPPFLAGS = \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings \
+	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined\
 	-fno-builtin \
 	-fPIC -Wl,-pie \
 	-std=c++17

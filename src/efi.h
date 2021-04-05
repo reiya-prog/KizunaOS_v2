@@ -183,7 +183,7 @@ public:
         UINT32 VerticalResolution;
         EFI_GRAPHICS_PIXEL_FORMAT PixelFormat;
         EFI_PIXEL_BITMASK PixelInformation;
-        UINT32 PixelPerScanLine;
+        UINT32 PixelsPerScanLine;
     } EFI_GRAPHICS_OUTPUT_MODE_INFORMATION;
 
     typedef struct
