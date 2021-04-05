@@ -1,14 +1,14 @@
 #pragma once
 
+#include "efi.h"
 #include "boot_loader.h"
 #include "elf.h"
-#include "efi.h"
 #include "efi_kernel_loader.h"
-// #include "graphics.h"
-#include "kernel.h"
-#include "std_func.h"
 #include "loader_asm.h"
 #include "kernel_asm.h"
+#include "kernel.h"
+#include "graphics.h"
+#include "std_func.h"
 #include "descriptor.h"
 // #include "handler.h"
 // #include "keyboard.h"
@@ -16,5 +16,5 @@
 // #include "stl.h"
 // #include "global.h"
 #include <stddef.h>
-#include <cstdint>
+#include <stdint.h>
 #include <stdarg.h>

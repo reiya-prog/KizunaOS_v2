@@ -37,7 +37,7 @@ KERNEL_CPPFLAGS = \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined\
+	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined -Wno-sign-compare\
 	-fno-builtin \
 	-fPIC -Wl,-pie \
 	-std=c++17
@@ -57,9 +57,9 @@ QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
 BIOS_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
+	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp graphics.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))

@@ -3,5 +3,6 @@
 #include "efi.h"
 #include "efi_kernel_loader.h"
 #include "kernel.h"
+#include "std_func.h"
 
 void BootLoader(EFI::EFI_HANDLE image_handle, EFI::EFI_SYSTEM_TABLE *system_table);

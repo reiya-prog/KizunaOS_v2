@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "std_func.h"
 
 enum PixelFormat
 {
@@ -10,7 +11,7 @@ enum PixelFormat
     kPixelBitOnly,
 };
 
-typedef struct
+typedef struct FrameBuffer
 {
     uint8_t *frame_buffer_base;
     uint32_t frame_buffer_size;
@@ -18,6 +19,6 @@ typedef struct
     uint32_t horizontal_resolution;
     uint32_t vertical_resolution;
     enum PixelFormat pixel_format;
-} FrameBuffer;
+}FrameBuffer;
 
 extern "C" void kernel_start(const FrameBuffer& frame_buffer);

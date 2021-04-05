@@ -2,7 +2,7 @@
 
 #include "kernel.h"
 
-typedef struct
+typedef struct PixelColor
 {
     uint8_t red, green, blue;
 } PixelColor;
@@ -30,24 +30,15 @@ class RGBPixelWriter : public PixelWriter
 {
 public:
     using PixelWriter::PixelWriter;
-
-    virtual void Write(int x, int y, const PixelColor& color) override {
-        auto point = PixelAt(x, y);
-        point[0] = color.red;
-        point[1] = color.green;
-        point[2] = color.blue;
-    }
+    virtual void Write(int x, int y, const PixelColor &color) override;
 };
 
 class BGRPixelWriter : public PixelWriter
 {
 public:
     using PixelWriter::PixelWriter;
-
-    virtual void Write(int x, int y, const PixelColor& color) override {
-        auto point = PixelAt(x, y);
-        point[0] = color.blue;
-        point[1] = color.green;
-        point[2] = color.red;
-    }
+    virtual void Write(int x, int y, const PixelColor &color) override;
 };
+
+extern char pixel_writer_buf[sizeof(RGBPixelWriter)];
+extern PixelWriter *pixel_writer;
