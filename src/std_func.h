@@ -11,4 +11,4 @@ void *operator new(size_t size, void *buf);
 void operator delete(void *obj, void *buf);
 void operator delete(void *obj);
 void memset(void *dst, int value, int size);
-extern "C" void memcpy(void *dst, const void *src, int size);
+//void memcpy(void *dst, const void *src, int size);

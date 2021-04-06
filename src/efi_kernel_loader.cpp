@@ -19,6 +19,14 @@ unsigned long long EFIFileSizeof(EFI::EFI_FILE_PROTOCOL *file)
     return file_info->FileSize;
 }
 
+extern "C" void memcpy(void *dst, const void *src, int size)
+{
+    char *p1 = reinterpret_cast<char *>(dst);
+    const char *p2 = reinterpret_cast<const char *>(src);
+    while (size-- > 0)
+        *p1++ = *p2++;
+}
+
 void LoadKernel(EFI::EFI_HANDLE image_handle)
 {
 
@@ -124,7 +132,6 @@ void LoadKernel(EFI::EFI_HANDLE image_handle)
         Elf64_Phdr program_header = elf_program_headers[i];
         if (program_header.p_type != PT_LOAD)
             continue;
-
         // memcpy(dst, src, size)
         memcpy(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr),
                reinterpret_cast<void *>(kernel_tmp_addr + program_header.p_offset),
@@ -196,7 +203,7 @@ void LoadKernel(EFI::EFI_HANDLE image_handle)
     kernel_file->Close(kernel_file);
     root_dir->Close(root_dir);
     gEFI->getSystemTable()->BootServices->FreePages(kernel_tmp_addr, (kernel_size + 0xfff) / 0x1000);
-    gEFI->getSystemTable()->ConOut->ClearScreen(gEFI->getSystemTable()->ConOut);
+ //   gEFI->getSystemTable()->ConOut->ClearScreen(gEFI->getSystemTable()->ConOut);
 
     EFI::EFI_MEMORY_DESCRIPTOR *memory_map = nullptr;
     EFI::UINTN memory_map_size = 0;
