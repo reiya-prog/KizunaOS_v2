@@ -21,4 +21,5 @@ typedef struct FrameBuffer
     enum PixelFormat pixel_format;
 }FrameBuffer;
 
+extern "C" void __cxa_pure_virtual();
 extern "C" void kernel_start(const FrameBuffer& frame_buffer);

@@ -181,25 +181,6 @@ void LoadKernel(EFI::EFI_HANDLE image_handle)
     EFIPrint(L"done.\r\n");
 
     uint64_t entry_addr = elf_header->e_entry + kernel_addr;
-    FrameBuffer frame_buffer = {
-        reinterpret_cast<uint8_t *>(gEFI->getGraphicsOutputProtocol()->Mode->FrameBufferBase),
-        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->FrameBufferSize),
-        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->PixelsPerScanLine),
-        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution),
-        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->VerticalResolution),
-        (PixelFormat)0};
-    switch (gEFI->getGraphicsOutputProtocol()->Mode->Info->PixelFormat)
-    {
-    case EFI::PixelRedGreenBlueReserved8BitPerColor:
-        frame_buffer.pixel_format = kPixelRGB8BitPerColor;
-        break;
-    case EFI::PixelBlueGreenRedReserved8BitPerColor:
-        frame_buffer.pixel_format = kPixelBGR8BitPerColor;
-        break;
-    default:
-        EFIPrint(L"An unexpected error has occurred.\r\n");
-        return;
-    }
     kernel_file->Close(kernel_file);
     root_dir->Close(root_dir);
     gEFI->getSystemTable()->BootServices->FreePages(kernel_tmp_addr, (kernel_size + 0xfff) / 0x1000);
@@ -219,12 +200,30 @@ void LoadKernel(EFI::EFI_HANDLE image_handle)
             is_success = gEFI->getSystemTable()->BootServices->AllocatePool(EFI::EfiLoaderData, memory_map_size, reinterpret_cast<EFI::VOID **>(&memory_map));
             is_success = gEFI->getSystemTable()->BootServices->GetMemoryMap(&memory_map_size, memory_map, &map_key, &descriptor_size, &descriptor_version);
         }
-        frame_buffer.frame_buffer_base = reinterpret_cast<uint8_t *>(gEFI->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
         is_success = gEFI->getSystemTable()->BootServices->ExitBootServices(image_handle, map_key);
     } while (is_success != EFI::EFI_SUCCESS);
 
+    FrameBuffer frame_buffer = {
+        reinterpret_cast<uint8_t *>(gEFI->getGraphicsOutputProtocol()->Mode->FrameBufferBase),
+        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->FrameBufferSize),
+        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->PixelsPerScanLine),
+        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution),
+        static_cast<uint32_t>(gEFI->getGraphicsOutputProtocol()->Mode->Info->VerticalResolution),
+        (PixelFormat)0};
+    switch (gEFI->getGraphicsOutputProtocol()->Mode->Info->PixelFormat)
+    {
+    case EFI::PixelRedGreenBlueReserved8BitPerColor:
+        frame_buffer.pixel_format = kPixelRGB8BitPerColor;
+        break;
+    case EFI::PixelBlueGreenRedReserved8BitPerColor:
+        frame_buffer.pixel_format = kPixelBGR8BitPerColor;
+        break;
+    default:
+        EFIPrint(L"An unexpected error has occurred.\r\n");
+        return;
+    }
         // typedef void EntryPoint(const FrameBuffer*);
-        // EntryPoint* entry_point = (EntryPoint *)entry_point;
+        // EntryPoint* entry_point = (EntryPoint *)entry_addr;
         // entry_point(&frame_buffer);
 
     unsigned stack_pointer = 0x7f0000lu;

@@ -4,7 +4,7 @@
 
 typedef struct PixelColor
 {
-    uint8_t red, green, blue;
+    uint8_t red, green, blue, reserved;
 } PixelColor;
 
 class PixelWriter

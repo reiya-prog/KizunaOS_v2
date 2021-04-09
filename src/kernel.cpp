@@ -2,6 +2,8 @@
 
 void kernel(const FrameBuffer &frame_buffer);
 
+extern "C" void __cxa_pure_virtual() {io_hlt();}
+
 extern "C"
 {
     void kernel_start(const FrameBuffer &frame_buffer)
@@ -28,7 +30,6 @@ void kernel(const FrameBuffer &frame_buffer)
     {
         for (int y = 0; y < frame_buffer.vertical_resolution; ++y)
         {
-            //frame_buffer.frame_buffer_base[x + y * frame_buffer.horizontal_resolution] = (x+y*frame_buffer.horizontal_resolution)%256;
             pixel_writer->Write(x, y, {0, 255, 0});
         }
     }

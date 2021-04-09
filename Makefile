@@ -12,18 +12,15 @@ KERNEL_TARGET = $(OUTDIR)/$(KERNEL_NAME)
 
 CC = clang++
 LOADER_CFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -mno-red-zone \
+	 -mno-red-zone \
 	-Wall -Wextra -Wpedantic
 
 LOADER_CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include \
-	-D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -nostdlib -mno-red-zone \
+ -mno-red-zone \
 	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
 	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined \
 	-fno-builtin \
@@ -33,7 +30,7 @@ KERNEL_CPPFLAGS = \
 	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
 	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-unknown-none-elf \
-	-fno-stack-protector -fno-exceptions -fshort-wchar \
+	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti \
 	-nostdlibinc -ffreestanding -mno-red-zone \
 	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
 	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined -Wno-sign-compare\
@@ -48,7 +45,7 @@ LOADER_LDFLAGS = \
 	-entry:efi_main
 
 KERNEL_LDFLAGS = \
-	-T kernel.ld -L$(HOMEDIR)/x86_64-elf/lib -lc++ -lc++abi -lm -lc -static
+	--entry kernel_start --static -z norelro
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -58,7 +55,7 @@ QEMUflags = \
 LOADER_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp graphics.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp libc_support.c
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))
