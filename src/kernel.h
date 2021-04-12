@@ -14,7 +14,6 @@ enum PixelFormat
 typedef struct FrameBuffer
 {
     uint8_t *frame_buffer_base;
-    uint32_t frame_buffer_size;
     uint32_t pixels_per_scan_line;
     uint32_t horizontal_resolution;
     uint32_t vertical_resolution;

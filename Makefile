@@ -14,27 +14,22 @@ CC = clang++
 LOADER_CFLAGS = \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	 -mno-red-zone \
-	-Wall -Wextra -Wpedantic
+	-mno-red-zone \
+	-Wall -Wextra -Wpedantic -Wno-writable-strings
 
 LOADER_CPPFLAGS = \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
- -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined \
+	-mno-red-zone \
+	-Wall -Wno-writable-strings \
 	-fno-builtin \
 	-std=c++17
 
 KERNEL_CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
-	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
-	--target=x86_64-unknown-none-elf \
-	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti \
-	-nostdlibinc -ffreestanding -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined -Wno-sign-compare\
-	-fno-builtin \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 -nostdlibinc \
+	-D__ELF__ -D_LDBL_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
+	--target=x86_64-unknown-none-elf -mno-red-zone -Wall \
+	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti -fno-builtin -ffreestanding \
 	-g \
 	-std=c++17
 
@@ -45,7 +40,7 @@ LOADER_LDFLAGS = \
 	-entry:efi_main
 
 KERNEL_LDFLAGS = \
-	--entry kernel_start --static -z norelro
+	-L $(HOMEDIR)/x86_64-elf/lib --entry kernel_start --static -z norelro --image-base 0x100000
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -89,7 +84,7 @@ $(OBJDIR)/%.elf.o:$(SRCDIR)/%.cpp
 $(LOADER_TARGET): $(LOADER_OBJS)
 	$(LD_LINK) $(LOADER_LDFLAGS) -out:$(LOADER_TARGET) $(LOADER_OBJS)
 
-$(KERNEL_TARGET): $(KERNEL_OBJS) kernel.ld
+$(KERNEL_TARGET): $(KERNEL_OBJS)
 	$(LD_LLD) $(KERNEL_LDFLAGS) -o $(KERNEL_TARGET) $(KERNEL_OBJS)
 
 $(TOOLS):
