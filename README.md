@@ -1,8 +1,7 @@
 # Kizuna OS
 ぼちぼちがんばりたい
 ## Requirements
-Windows wsl2(Ubuntu 20.04.1 LTS)もしくはMac OSを想定しています。<br>
-wsl2のQEMUはCUI実行のみなので実行自体はWindows上でやっていたりしてます。
+Windows wsl2(Ubuntu 20.04.1 LTS)もしくはMac OS(未整備)を想定しています。<br>
 ### common
 #### clang++
 - Ubuntu
