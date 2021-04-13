@@ -12,32 +12,24 @@ KERNEL_TARGET = $(OUTDIR)/$(KERNEL_NAME)
 
 CC = clang++
 LOADER_CFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -mno-red-zone \
-	-Wall -Wextra -Wpedantic
+	-mno-red-zone \
+	-Wall -Wextra -Wpedantic -Wno-writable-strings
 
 LOADER_CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include \
-	-D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -nostdlib -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined \
+	-mno-red-zone \
+	-Wall -Wno-writable-strings \
 	-fno-builtin \
 	-std=c++17
 
 KERNEL_CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
-	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
-	--target=x86_64-unknown-none-elf \
-	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -ffreestanding -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings -Wno-macro-redefined -Wno-sign-compare\
-	-fno-builtin \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 -nostdlibinc \
+	-D__ELF__ -D_LDBL_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
+	--target=x86_64-unknown-none-elf -mno-red-zone -Wall \
+	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti -fno-builtin -ffreestanding \
 	-g \
 	-std=c++17
 
@@ -48,7 +40,7 @@ LOADER_LDFLAGS = \
 	-entry:efi_main
 
 KERNEL_LDFLAGS = \
-	-T kernel.ld -L$(HOMEDIR)/x86_64-elf/lib -lc++ -lc++abi -lm -lc -static
+	-L $(HOMEDIR)/x86_64-elf/lib --entry kernel_start --static -z norelro --image-base 0x100000
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -58,7 +50,7 @@ QEMUflags = \
 LOADER_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp graphics.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp libc_support.c
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))
@@ -92,7 +84,7 @@ $(OBJDIR)/%.elf.o:$(SRCDIR)/%.cpp
 $(LOADER_TARGET): $(LOADER_OBJS)
 	$(LD_LINK) $(LOADER_LDFLAGS) -out:$(LOADER_TARGET) $(LOADER_OBJS)
 
-$(KERNEL_TARGET): $(KERNEL_OBJS) kernel.ld
+$(KERNEL_TARGET): $(KERNEL_OBJS)
 	$(LD_LLD) $(KERNEL_LDFLAGS) -o $(KERNEL_TARGET) $(KERNEL_OBJS)
 
 $(TOOLS):
