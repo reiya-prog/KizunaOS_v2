@@ -1,4 +1,4 @@
-BIOS_NAME := BOOTX64.EFI
+LOADER_NAME := BOOTX64.EFI
 KERNEL_NAME := KizunaOS.ELF
 SRCDIR := src
 OBJDIR := build
@@ -7,67 +7,58 @@ APPDIR := $(OUTDIR)/EFI/BOOT
 HOMEDIR := $(shell echo $$HOME)
 WORKDIR := $(shell pwd)
 
-BIOS_TARGET = $(APPDIR)/$(BIOS_NAME)
+LOADER_TARGET = $(APPDIR)/$(LOADER_NAME)
 KERNEL_TARGET = $(OUTDIR)/$(KERNEL_NAME)
 
 CC = clang++
-BIOS_CFLAGS = \
-	--target=x86_64-pc-win32-coff \
-	-Wall -Wextra -Wpedantic
-
-LOADER_CFAGS = \
-
-BIOS_CPPFLAGS = \
-	-MMD -MP \
-	-I $(WORKDIR)/x86_64-elf/include -I $(WORKDIR)/x86_64-elf/include/c++/v1 \
-	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
+LOADER_CFLAGS = \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast\
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings\
+	-mno-red-zone \
+	-Wall -Wextra -Wpedantic -Wno-writable-strings
+
+LOADER_CPPFLAGS = \
+	--target=x86_64-pc-win32-coff \
+	-fno-stack-protector -fno-exceptions -fshort-wchar \
+	-mno-red-zone \
+	-Wall -Wno-writable-strings \
 	-fno-builtin \
 	-std=c++17
 
 KERNEL_CPPFLAGS = \
-	-MMD -MP \
-	-I $(WORKDIR)/x86_64-elf/include -I $(WORKDIR)/x86_64-elf/include/c++/v1 \
-	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
-	--target=x86_64-unknown-none-elf \
-	-fno-stack-protector -fno-exceptions -fshort-wchar \
-	-nostdlibinc -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
-	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings \
-	-fno-builtin \
-	-fPIC -Wl,-pie \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 -nostdlibinc \
+	-D__ELF__ -D_LDBL_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
+	--target=x86_64-unknown-none-elf -mno-red-zone -Wall \
+	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti -fno-builtin -ffreestanding \
+	-g \
 	-std=c++17
 
-LD_LINK = /usr/bin/lld-link-6.0
+LD_LINK = /usr/bin/lld-link-10
 LD_LLD = /usr/bin/ld.lld
-BIOS_LDFLAGS = \
+LOADER_LDFLAGS = \
 	-subsystem:efi_application -nodefaultlib \
 	-entry:efi_main
 
 KERNEL_LDFLAGS = \
-	-T kernel.ld -static
+	-L $(HOMEDIR)/x86_64-elf/lib --entry kernel_start --static -z norelro --image-base 0x100000 -lc++ -lc++abi -lm -lc
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
-	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -nographic
+	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
-BIOS_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp font.cpp graphics.cpp stdfunc.cpp elf_loader.cpp asm_loader.s
+LOADER_SRCS = \
+	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
 KERNEL_SRCS = \
-	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm_kernel.s descriptor.cpp handler.cpp keyboard.cpp pic.cpp global.cpp
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp font.cpp libc_support.cpp console.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
-BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))
+LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))
 KERNEL_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .elf.o, $(basename $(KERNEL_SRCS))))
 DEPS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.d,$(SRCS)))
 
 .PHONY: all clean
-all: Makefile $(APPDIR) $(OBJDIR) $(TOOLS) $(BIOS_TARGET) $(KERNEL_TARGET)
+all: Makefile $(APPDIR) $(OBJDIR) $(TOOLS) $(LOADER_TARGET) $(KERNEL_TARGET)
 
 $(APPDIR):
 	mkdir -p $(APPDIR)
@@ -76,22 +67,25 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.s
-	$(CC) $(BIOS_CFLAGS) -o $@ -c $<
+	$(CC) $(LOADER_CFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
-	$(CC) $(BIOS_CPPFLAGS) -o $@ -c $<
+	$(CC) $(LOADER_CPPFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.elf.o:$(SRCDIR)/%.s
+	$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
+
+$(OBJDIR)/%.elf.o:$(SRCDIR)/%.c
 	$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.elf.o:$(SRCDIR)/%.cpp
 	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
 
-$(BIOS_TARGET): $(BIOS_OBJS)
-	$(LD_LINK) $(BIOS_LDFLAGS) -out:$(BIOS_TARGET) $(BIOS_OBJS)
+$(LOADER_TARGET): $(LOADER_OBJS)
+	$(LD_LINK) $(LOADER_LDFLAGS) -out:$(LOADER_TARGET) $(LOADER_OBJS)
 
-$(KERNEL_TARGET): $(KERNEL_OBJS) kernel.ld
-	$(LD_LLD) $(KERNEL_LDFLAGS) -o $(KERNEL_TARGET) $(KERNEL_OBJS) --pic-executable
+$(KERNEL_TARGET): $(KERNEL_OBJS)
+	$(LD_LLD) $(KERNEL_LDFLAGS) -o $(KERNEL_TARGET) $(KERNEL_OBJS)
 
 $(TOOLS):
 	mkdir -p work
@@ -140,7 +134,9 @@ $(TOOLS):
 
 tools: Makefile $(TOOLS)
 
-bios: Makefile $(OBJDIR) $(BIOS_TARGET)
+loader: Makefile $(OBJDIR) $(APPDIR) $(LOADER_TARGET)
+
+kernel: Makefile $(OBJDIR) $(APPDIR) $(KERNEL_TARGET)
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)

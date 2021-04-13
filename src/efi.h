@@ -183,7 +183,7 @@ public:
         UINT32 VerticalResolution;
         EFI_GRAPHICS_PIXEL_FORMAT PixelFormat;
         EFI_PIXEL_BITMASK PixelInformation;
-        UINT32 PixelPerScanLine;
+        UINT32 PixelsPerScanLine;
     } EFI_GRAPHICS_OUTPUT_MODE_INFORMATION;
 
     typedef struct
@@ -519,34 +519,37 @@ public:
     EFI(){};
     EFI(EFI_SYSTEM_TABLE *ST)
     {
-        this->SystemTable = ST;
+        this->system_table_ = ST;
     }
 
     void initEFI();
     void setSystemTable(EFI_SYSTEM_TABLE *ST)
     {
-        this->SystemTable = ST;
+        this->system_table_ = ST;
     }
     EFI_SYSTEM_TABLE *getSystemTable()
     {
-        return this->SystemTable;
+        return this->system_table_;
     }
     EFI_SIMPLE_POINTER_PROTOCOL *getSimplePointerProtocol()
     {
-        return this->SimplePointerProtocol;
+        return this->simple_pointer_protocol_;
     }
     EFI_GRAPHICS_OUTPUT_PROTOCOL *getGraphicsOutputProtocol()
     {
-        return this->GraphicsOutputProtocol;
+        return this->graphics_output_protocol_;
     }
     EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *getSimpleFileSystemProtocol()
     {
-        return this->SimpleFileSystemProtocol;
+        return this->simple_file_system_protocol_;
     }
 
 private:
-    EFI_SYSTEM_TABLE *SystemTable = nullptr;
-    EFI_SIMPLE_POINTER_PROTOCOL *SimplePointerProtocol = nullptr;
-    EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol = nullptr;
-    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SimpleFileSystemProtocol = nullptr;
+    EFI_SYSTEM_TABLE *system_table_ = nullptr;
+    EFI_SIMPLE_POINTER_PROTOCOL *simple_pointer_protocol_ = nullptr;
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *graphics_output_protocol_ = nullptr;
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *simple_file_system_protocol_ = nullptr;
 };
+
+extern char gEFI_buf[sizeof(EFI)];
+extern EFI *gEFI;
