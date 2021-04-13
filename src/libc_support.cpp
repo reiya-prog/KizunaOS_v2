@@ -1,4 +1,4 @@
-#include "libc_support.h"
+#include "main.h"
 
 extern "C"
 {
@@ -7,7 +7,7 @@ extern "C"
         return 0;
     }
 
-    int close(int file)
+    int _close(int file)
     {
         return -1;
     }
@@ -28,7 +28,7 @@ extern "C"
         return 0;
     }
 
-    int read(int file, char *ptr, int len)
+    int _read(int file, char *ptr, int len)
     {
         return 0;
     }

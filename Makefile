@@ -40,7 +40,7 @@ LOADER_LDFLAGS = \
 	-entry:efi_main
 
 KERNEL_LDFLAGS = \
-	-L $(HOMEDIR)/x86_64-elf/lib --entry kernel_start --static -z norelro --image-base 0x100000
+	-L $(HOMEDIR)/x86_64-elf/lib --entry kernel_start --static -z norelro --image-base 0x100000 -lc++ -lc++abi -lm -lc
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -48,9 +48,9 @@ QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
 LOADER_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp graphics.cpp
+	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp font.cpp libc_support.cpp console.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))
@@ -134,7 +134,9 @@ $(TOOLS):
 
 tools: Makefile $(TOOLS)
 
-loader: Makefile $(OBJDIR) $(LOADER_TARGET)
+loader: Makefile $(OBJDIR) $(APPDIR) $(LOADER_TARGET)
+
+kernel: Makefile $(OBJDIR) $(APPDIR) $(KERNEL_TARGET)
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)

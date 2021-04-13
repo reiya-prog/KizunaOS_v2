@@ -1,4 +1,4 @@
-#include "main.h"
+#include "boot_loader.h"
 
 /*
 C++はマングリングにより正常にmain関数として呼び出すことができないので、

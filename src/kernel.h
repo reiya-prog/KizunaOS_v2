@@ -1,14 +1,9 @@
 #pragma once
 
-#include <stdint.h>
-#include "std_func.h"
-
 enum PixelFormat
 {
     kPixelRGB8BitPerColor,
     kPixelBGR8BitPerColor,
-    kPixelBitMask,
-    kPixelBitOnly,
 };
 
 typedef struct FrameBuffer
@@ -22,3 +17,4 @@ typedef struct FrameBuffer
 
 extern "C" void __cxa_pure_virtual();
 extern "C" void kernel_start(const FrameBuffer& frame_buffer);
+void kernel(const FrameBuffer &frame_buffer);

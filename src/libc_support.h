@@ -1,4 +1,6 @@
 #include <stddef.h>
+#include <stdint.h>
+#include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -6,7 +8,7 @@ extern "C"
 {
     caddr_t sbrk(int incr);
 
-    int close(int file);
+    int _close(int file);
 
     int fstat(int file, struct stat *st);
 
@@ -14,7 +16,7 @@ extern "C"
 
     int lseek(int file, int ptr, int dir);
 
-    int read(int file, char *ptr, int len);
+    int _read(int file, char *ptr, int len);
 
     int write(int file, char *ptr, int len);
 

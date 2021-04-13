@@ -1,7 +1,5 @@
 #pragma once
 
-#include "kernel.h"
-
 typedef struct PixelColor
 {
     uint8_t red, green, blue, reserved;
