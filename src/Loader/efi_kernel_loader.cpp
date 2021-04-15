@@ -2,6 +2,9 @@
 
 #define KERNEL_NAME L"KizunaOS.ELF"
 
+#define min(a, b) a > b ? b : a
+#define max(a, b) a > b ? a : b
+
 EFI::EFI_GUID EFI_FILE_INFO_GUID = {0x09576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}};
 
 void EFIPrint(wchar_t *str)

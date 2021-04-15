@@ -48,12 +48,12 @@ QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
 LOADER_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
+	Loader/boot_loader.cpp Loader/efi_main.cpp Loader/efi.cpp Loader/efi_kernel_loader.cpp Loader/loader_asm.s
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp assets.cpp libc_support.cpp console.cpp
+	Kernel/kernel.cpp Kernel/kernel_asm.s Kernel/std_func.cpp Kernel/graphics.cpp Kernel/assets.cpp Kernel/libc_support.cpp Kernel/console.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
-LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))
+LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(LOADER_SRCS))))
 KERNEL_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .elf.o, $(basename $(KERNEL_SRCS))))
 DEPS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.d,$(SRCS)))
 
@@ -64,7 +64,8 @@ $(APPDIR):
 	mkdir -p $(APPDIR)
 
 $(OBJDIR):
-	mkdir -p $(OBJDIR)
+	mkdir -p $(OBJDIR)/Loader
+	mkdir -p $(OBJDIR)/Kernel
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.s
 	$(CC) $(LOADER_CFLAGS) -o $@ -c $<
