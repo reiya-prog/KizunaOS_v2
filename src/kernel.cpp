@@ -28,16 +28,14 @@ void kernel(const FrameBuffer &frame_buffer)
             pixel_writer->Write(x, y, {255, 255, 255});
         }
     }
+    console = new (console_buf) Console{*pixel_writer, {0, 0, 0}, {255, 255, 255}};
+
     for(int i=0;i<frame_buffer.horizontal_resolution;++i){
         for(int j=0;j<frame_buffer.vertical_resolution;++j){
-            pixel_writer->Write(i, j, {255,255,255});
+            pixel_writer->Write(i, j, 0x20b2aaLL);
         }
     }
+    printk("Linking to you, access our connection!\n\tKizunaOS, boot up!\n");
 
-    console = new (console_buf) Console{*pixel_writer, {0, 0, 0}, {255, 255, 255}};
-    for (int i = 0; i < 27; ++i)
-    {
-        printk("console: print %d\n", i);
-    }
     io_hlt();
 }

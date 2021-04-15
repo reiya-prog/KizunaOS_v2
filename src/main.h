@@ -9,7 +9,7 @@
 #include "kernel.h"
 #include "graphics.h"
 #include "std_func.h"
-#include "font.h"
+#include "assets.h"
 #include "console.h"
 #include "descriptor.h"
 #include "libc_support.h"

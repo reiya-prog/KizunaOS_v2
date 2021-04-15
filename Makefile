@@ -50,7 +50,7 @@ QEMUflags = \
 LOADER_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp efi_kernel_loader.cpp loader_asm.s std_func.cpp
 KERNEL_SRCS = \
-	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp font.cpp libc_support.cpp console.cpp
+	kernel.cpp kernel_asm.s std_func.cpp graphics.cpp assets.cpp libc_support.cpp console.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRCS)))))

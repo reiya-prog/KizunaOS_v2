@@ -1,5 +1,7 @@
 #pragma once
 
+#include "kernel.h"
+
 typedef struct PixelColor
 {
     uint8_t red, green, blue, reserved;
@@ -13,6 +15,7 @@ public:
     }
     virtual ~PixelWriter() = default;
     virtual void Write(int x, int y, const PixelColor &color) = 0;
+    virtual void Write(int x, int y, const uint64_t pallet) = 0;
 
 protected:
     uint8_t *PixelAt(int x, int y)
@@ -29,6 +32,7 @@ class RGBPixelWriter : public PixelWriter
 public:
     using PixelWriter::PixelWriter;
     virtual void Write(int x, int y, const PixelColor &color) override;
+    virtual void Write(int x, int y, const uint64_t pallet) override;
 };
 
 class BGRPixelWriter : public PixelWriter
@@ -36,7 +40,9 @@ class BGRPixelWriter : public PixelWriter
 public:
     using PixelWriter::PixelWriter;
     virtual void Write(int x, int y, const PixelColor &color) override;
+    virtual void Write(int x, int y, const uint64_t pallet) override;
 };
 
+PixelColor ConvertColor(uint64_t pallet);
 extern char pixel_writer_buf[sizeof(RGBPixelWriter)];
 extern PixelWriter *pixel_writer;
