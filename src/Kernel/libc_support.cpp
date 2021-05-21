@@ -12,6 +12,11 @@ extern "C"
         return -1;
     }
 
+    int close(int file)
+    {
+        return -1;
+    }
+
     int fstat(int file, struct stat *st)
     {
         st->st_mode = S_IFCHR;
@@ -29,6 +34,11 @@ extern "C"
     }
 
     int _read(int file, char *ptr, int len)
+    {
+        return 0;
+    }
+
+    int read(int file, char *ptr, int len)
     {
         return 0;
     }

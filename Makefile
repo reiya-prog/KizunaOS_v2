@@ -3,6 +3,7 @@ KERNEL_NAME := KizunaOS.ELF
 SRCDIR := src
 OBJDIR := build
 OUTDIR := app
+USBDIR := usb
 APPDIR := $(OUTDIR)/EFI/BOOT
 HOMEDIR := $(shell echo $$HOME)
 WORKDIR := $(shell pwd)
@@ -26,11 +27,10 @@ LOADER_CPPFLAGS = \
 	-std=c++17
 
 KERNEL_CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 -nostdlibinc \
+	-I $(WORKDIR)/src/Kernel -I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 -nostdlibinc \
 	-D__ELF__ -D_LDBL_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
 	--target=x86_64-unknown-none-elf -mno-red-zone -Wall \
 	-fno-stack-protector -fno-exceptions -fshort-wchar -fno-rtti -fno-builtin -ffreestanding \
-	-g \
 	-std=c++17
 
 LD_LINK = /usr/bin/lld-link-10
@@ -47,14 +47,17 @@ OVMF = ovmf/bios64.bin
 QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
 
-LOADER_SRCS = \
-	Loader/boot_loader.cpp Loader/efi_main.cpp Loader/efi.cpp Loader/efi_kernel_loader.cpp Loader/loader_asm.s
-KERNEL_SRCS = \
-	Kernel/kernel.cpp Kernel/kernel_asm.s Kernel/std_func.cpp Kernel/graphics.cpp Kernel/assets.cpp Kernel/libc_support.cpp Kernel/console.cpp
+LOADER_SRCS = $(SRCDIR)/Loader/*.cpp $(SRCDIR)/Loader/*.c $(SRCDIR)/Loader/*.s
+LOADER_SRC = $(wildcard $(LOADER_SRCS))
+KERNEL_SRCS = $(SRCDIR)/Kernel/*.cpp $(SRCDIR)/Kernel/*.c $(SRCDIR)/Kernel/*.s \
+			  $(SRCDIR)/Kernel/usb/*.cpp  $(SRCDIR)/Kernel/usb/classdriver/*.cpp $(SRCDIR)/Kernel/usb/xhci/*.cpp
+KERNEL_SRC = $(wildcard $(KERNEL_SRCS))
 
-SRCS = $(wildcard $(SRCDIR)/*.cpp)
-LOADER_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(LOADER_SRCS))))
-KERNEL_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .elf.o, $(basename $(KERNEL_SRCS))))
+KERNEL_SRCS += $(USBDIR)/$(CLSDIR)/%.cpp
+KERNEL_SRCS += $(USBDIR)/$(XHCIDIR)/%.cpp
+
+LOADER_OBJS := $(addprefix $(OBJDIR)/Loader/,$(addsuffix .o, $(basename $(notdir $(LOADER_SRC)))))
+KERNEL_OBJS := $(addprefix $(OBJDIR)/Kernel/,$(addsuffix .elf.o, $(basename $(notdir $(KERNEL_SRC)))))
 DEPS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.d,$(SRCS)))
 
 .PHONY: all clean
@@ -66,21 +69,37 @@ $(APPDIR):
 $(OBJDIR):
 	mkdir -p $(OBJDIR)/Loader
 	mkdir -p $(OBJDIR)/Kernel
+	echo $(KERNEL_OBJS)
 
-$(OBJDIR)/%.o:$(SRCDIR)/%.s
+
+$(OBJDIR)/Loader/%.o:$(SRCDIR)/Loader/%.s
 	$(CC) $(LOADER_CFLAGS) -o $@ -c $<
 
-$(OBJDIR)/%.o:$(SRCDIR)/%.cpp
+$(OBJDIR)/Loader/%.o:$(SRCDIR)/Loader/%.c
+	$(CC) $(LOADER_CFLAGS) -o $@ -c $<
+
+$(OBJDIR)/Loader/%.o:$(SRCDIR)/Loader/%.cpp
 	$(CC) $(LOADER_CPPFLAGS) -o $@ -c $<
 
-$(OBJDIR)/%.elf.o:$(SRCDIR)/%.s
+
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/%.s
 	$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
 
-$(OBJDIR)/%.elf.o:$(SRCDIR)/%.c
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/%.c
 	$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
 
-$(OBJDIR)/%.elf.o:$(SRCDIR)/%.cpp
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/%.cpp
 	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
+
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/usb/%.cpp
+	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
+
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/usb/classdriver/%.cpp
+	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
+
+$(OBJDIR)/Kernel/%.elf.o:$(SRCDIR)/Kernel/usb/xhci/%.cpp
+	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
+
 
 $(LOADER_TARGET): $(LOADER_OBJS)
 	$(LD_LINK) $(LOADER_LDFLAGS) -out:$(LOADER_TARGET) $(LOADER_OBJS)

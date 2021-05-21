@@ -6,6 +6,5 @@
 #define min(a, b) a > b ? b : a
 #define max(a, b) a > b ? a : b
 
-void *operator new(size_t size, void *buf);
 void operator delete(void *obj, void *buf);
 void operator delete(void *obj);

@@ -10,6 +10,8 @@ extern "C"
 
     int _close(int file);
 
+    int close(int file);
+
     int fstat(int file, struct stat *st);
 
     int isatty(int file);
@@ -17,6 +19,8 @@ extern "C"
     int lseek(int file, int ptr, int dir);
 
     int _read(int file, char *ptr, int len);
+
+    int read(int file, char *ptr, int len);
 
     int write(int file, char *ptr, int len);
 

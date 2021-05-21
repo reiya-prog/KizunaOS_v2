@@ -6,8 +6,8 @@
 #include "std_func.h"
 #include "assets.h"
 #include "console.h"
-#include "descriptor.h"
 #include "libc_support.h"
+#include "pci.h"
 // #include "handler.h"
 // #include "keyboard.h"
 // #include "pic.h"
@@ -20,3 +20,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cstring>
+
+#include "usb/memory.hpp"
+#include "usb/device.hpp"
+#include "usb/classdriver/mouse.hpp"
+#include "usb/xhci/xhci.hpp"
+#include "usb/xhci/trb.hpp"
+#include "error.hpp"
