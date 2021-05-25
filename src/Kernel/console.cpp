@@ -9,7 +9,7 @@ void WriteChar(int x, int y, char c, PixelColor color)
     {
         for (int x_i = 0; x_i < 8; ++x_i)
         {
-            if (kFontMap[c][y_i][x_i])
+            if (kFontMap[(int)c][y_i][x_i])
                 pixel_writer->Write(x + x_i, y + y_i, color);
         }
     }
